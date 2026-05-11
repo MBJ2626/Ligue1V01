@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Tunisia MatchSheet DB{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">⚽</div>
+      <div>
+        <strong>MatchSheet DB</strong>
+        <span>Ligue 1 Tunisie</span>
+      </div>
+    </div>
+    <nav>
+      <a class="{{ 'active' if page == 'dashboard' else '' }}" href="/">Dashboard</a>
+      <a class="{{ 'active' if page == 'upload' else '' }}" href="/upload">Upload</a>
+      <a class="{{ 'active' if page == 'manual' else '' }}" href="/manual">Saisie manuelle</a>
+      <a class="{{ 'active' if page == 'documents' else '' }}" href="/documents">Documents</a>
+      <a class="{{ 'active' if page == 'matches' else '' }}" href="/matches">Matchs</a>
+      <a class="{{ 'active' if page == 'players' else '' }}" href="/players">Joueurs</a>
+      <a class="{{ 'active' if page == 'events' else '' }}" href="/events">Événements</a>
+      <a class="{{ 'active' if page == 'notifications' else '' }}" href="/notifications">Notifications</a>
+      <a class="{{ 'active' if page == 'officials' else '' }}" href="/officials">Arbitres</a>
+    </nav>
+    <div class="sidebar-foot">
+      <small>MVP local avec SQLite<br>PDF texte · DOCX · XLSX · CSV</small>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Base de données sportive</p>
+        <h1>{% block h1 %}Tunisia MatchSheet DB{% endblock %}</h1>
+      </div>
+      <div class="top-actions">
+        <a class="btn secondary" href="/manual">Saisie manuelle</a>
+        <a class="btn secondary" href="/notifications">Notifications</a>
+        <a class="btn secondary" href="/export/matches.csv">Export matchs</a>
+        <a class="btn primary" href="/upload">Uploader</a>
+      </div>
+    </header>
+    {% block content %}{% endblock %}
+  </main>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

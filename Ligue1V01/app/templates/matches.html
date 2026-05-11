@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Matchs · MatchSheet DB{% endblock %}
+{% block h1 %}Matchs joués{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="section-head"><h2>Calendrier et résultats extraits</h2><a class="btn secondary small" href="/export/matches.csv">Export CSV</a></div>
+  <div class="table-tools"><input class="table-filter" data-table="matches-table" placeholder="Filtrer par équipe, date, stade..."></div>
+  <div class="table-wrap">
+    <table id="matches-table">
+      <thead><tr><th>Date</th><th>Heure</th><th>Journée</th><th>Domicile</th><th>Score</th><th>Extérieur</th><th>Stade</th><th></th></tr></thead>
+      <tbody>
+      {% for m in matches %}
+      <tr>
+        <td>{{ m.match_date|dash }}</td>
+        <td>{{ m.match_time|dash }}</td>
+        <td>{{ m.round_label|dash }}</td>
+        <td><strong>{{ m.home_team|dash }}</strong></td>
+        <td><span class="badge dark">{{ m|score }}</span></td>
+        <td><strong>{{ m.away_team|dash }}</strong></td>
+        <td>{{ m.stadium|dash }}</td>
+        <td><a class="btn small secondary" href="/matches/{{ m.id }}">Détails</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="empty">Aucun match validé.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

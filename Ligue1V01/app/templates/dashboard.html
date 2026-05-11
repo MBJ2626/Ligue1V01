@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · MatchSheet DB{% endblock %}
+{% block h1 %}Dashboard{% endblock %}
+{% block content %}
+<section class="grid cards six">
+  <article class="card stat"><span>Matchs</span><strong>{{ stats.matches }}</strong></article>
+  <article class="card stat"><span>Clubs</span><strong>{{ stats.clubs }}</strong></article>
+  <article class="card stat"><span>Joueurs</span><strong>{{ stats.players }}</strong></article>
+  <article class="card stat"><span>Événements</span><strong>{{ stats.events }}</strong></article>
+  <article class="card stat yellow"><span>Cartons jaunes</span><strong>{{ stats.yellow_cards }}</strong></article>
+  <article class="card stat red"><span>Cartons rouges</span><strong>{{ stats.red_cards }}</strong></article>
+  <article class="card stat red"><span>Notifications critiques</span><strong>{{ stats.notifications_critical or 0 }}</strong></article>
+  <article class="card stat yellow"><span>À surveiller</span><strong>{{ stats.yellow_watch_alerts or 0 }}</strong></article>
+</section>
+
+<section class="grid two">
+  <article class="card">
+    <div class="section-head"><h2>Derniers matchs validés</h2><a href="/matches">Voir tout</a></div>
+    <div class="table-wrap compact">
+      <table>
+        <thead><tr><th>Date</th><th>Match</th><th>Score</th><th>Stade</th></tr></thead>
+        <tbody>
+        {% for m in stats.recent_matches %}
+          <tr onclick="window.location='/matches/{{ m.id }}'" class="clickable">
+            <td>{{ m.match_date|dash }}</td>
+            <td><strong>{{ m.home_team|dash }}</strong> vs <strong>{{ m.away_team|dash }}</strong></td>
+            <td><span class="badge dark">{{ m|score }}</span></td>
+            <td>{{ m.stadium|dash }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="4" class="empty">Aucun match en base. Uploade une feuille pour commencer.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="section-head"><h2>Discipline par équipe</h2><span class="muted">Top 10</span></div>
+    <div class="bars">
+      {% for row in stats.cards_by_team %}
+      {% set total = (row.yellow or 0) + (row.red or 0) %}
+      <div class="bar-row">
+        <span>{{ row.club|dash }}</span>
+        <div class="bar"><i style="width: {{ [total * 12, 100]|min }}%"></i></div>
+        <strong>{{ total }}</strong>
+      </div>
+      {% else %}
+      <p class="empty">Aucun carton détecté.</p>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="card">
+  <div class="section-head"><h2>Notifications discipline</h2><a href="/notifications">Voir les alertes</a></div>
+  <p class="muted">Le système signale automatiquement les cartons rouges et les joueurs qui atteignent ou approchent le seuil de 3 cartons jaunes sur une fenêtre de 10 matchs.</p>
+</section>
+
+<section class="card">
+  <div class="section-head"><h2>Buts par équipe</h2><span class="muted">À partir des événements extraits</span></div>
+  <div class="bars horizontal">
+    {% for row in stats.goals_by_team %}
+    <div class="bar-row">
+      <span>{{ row.club|dash }}</span>
+      <div class="bar"><i style="width: {{ [row.goals * 14, 100]|min }}%"></i></div>
+      <strong>{{ row.goals }}</strong>
+    </div>
+    {% else %}
+    <p class="empty">Aucun but enregistré.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

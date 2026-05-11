@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Upload · MatchSheet DB{% endblock %}
+{% block h1 %}Uploader une feuille de match{% endblock %}
+{% block content %}
+<section class="grid two upload-grid">
+  <article class="card upload-card">
+    <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
+      <label class="dropzone" for="files">
+        <input id="files" name="files" type="file" multiple accept=".pdf,.docx,.xlsx,.xlsm,.xls,.csv" required>
+        <span class="drop-icon">⬆</span>
+        <strong>Dépose les feuilles ici</strong>
+        <small>ou clique pour choisir des fichiers PDF, Word DOCX, Excel XLSX/XLSM/XLS, CSV</small>
+        <em id="file-list">Aucun fichier sélectionné</em>
+      </label>
+      <button class="btn primary wide" type="submit">Analyser et créer un brouillon</button>
+    </form>
+  </article>
+  <article class="card">
+    <h2>Ce que l’analyse essaie d’extraire</h2>
+    <div class="checklist">
+      <span>Match : compétition, saison, journée, date, heure, stade, score</span>
+      <span>Équipes : domicile, extérieur, titulaires, remplaçants, staff</span>
+      <span>Joueurs : numéro, licence, poste, naissance, nationalité, capitaine, gardien</span>
+      <span>Événements : buts, cartons jaunes/rouges, remplacements, minutes</span>
+      <span>Arbitres et officiels : central, assistants, 4e arbitre, commissaire</span>
+      <span>Observations : réserves, notes et commentaires libres</span>
+    </div>
+    <div class="notice">
+      <strong>Important :</strong> les PDF scannés nécessitent un moteur OCR. Ce prototype détecte le cas et conserve le document, mais l’extraction automatique est meilleure avec PDF texte, DOCX ou Excel.
+    </div>
+  </article>
+</section>
+{% endblock %}

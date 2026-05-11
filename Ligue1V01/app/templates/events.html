@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Événements · MatchSheet DB{% endblock %}
+{% block h1 %}Buts, cartons et remplacements{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="section-head"><h2>Tous les événements</h2><a class="btn secondary small" href="/export/events.csv">Export CSV</a></div>
+  <div class="table-tools"><input class="table-filter" data-table="events-table" placeholder="Filtrer par joueur, club, type..."></div>
+  <div class="table-wrap">
+    <table id="events-table">
+      <thead><tr><th>Date</th><th>Match</th><th>Minute</th><th>Type</th><th>Club</th><th>Joueur</th><th>Lié à</th><th>Détail</th></tr></thead>
+      <tbody>
+      {% for e in events %}
+      <tr>
+        <td>{{ e.match_date|dash }}</td><td>{{ e.home_team|dash }} vs {{ e.away_team|dash }}</td><td>{{ e|minute_label }}</td><td><span class="badge {{ e.card_color or e.event_type }}">{{ e|event_label }}</span></td><td>{{ e.club|dash }}</td><td><strong>{{ e.player|dash }}</strong></td><td>{{ e.related_player|dash }}</td><td>{{ e.detail|dash }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="empty">Aucun événement.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

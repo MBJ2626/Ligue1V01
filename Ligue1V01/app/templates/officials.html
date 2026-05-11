@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Arbitres · MatchSheet DB{% endblock %}
+{% block h1 %}Arbitres et officiels{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="section-head"><h2>Base officiels</h2><a class="btn secondary small" href="/export/officials.csv">Export CSV</a></div>
+  <div class="table-tools"><input class="table-filter" data-table="officials-table" placeholder="Filtrer officiels..."></div>
+  <div class="table-wrap">
+    <table id="officials-table">
+      <thead><tr><th>Nom</th><th>Matchs</th><th>Cartons jaunes dans ses matchs</th><th>Cartons rouges dans ses matchs</th><th>Créé</th></tr></thead>
+      <tbody>
+      {% for o in officials %}
+      <tr><td><strong>{{ o.full_name }}</strong></td><td>{{ o.matches_count or 0 }}</td><td>{{ o.yellow_cards or 0 }}</td><td>{{ o.red_cards or 0 }}</td><td>{{ o.created_at }}</td></tr>
+      {% else %}
+      <tr><td colspan="5" class="empty">Aucun officiel en base.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

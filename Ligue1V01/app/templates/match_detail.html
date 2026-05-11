@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% set m = detail['match'] %}
+{% block title %}{{ m.home_team|dash }} vs {{ m.away_team|dash }} · MatchSheet DB{% endblock %}
+{% block h1 %}{{ m.home_team|dash }} <span class="score-title">{{ m|score }}</span> {{ m.away_team|dash }}{% endblock %}
+{% block content %}
+<section class="match-hero card">
+  <div class="match-meta">
+    <span>{{ m.competition|dash }}</span>
+    <span>{{ m.season|dash }}</span>
+    <span>{{ m.round_label|dash }}</span>
+    <span>{{ m.match_date|dash }} · {{ m.match_time|dash }}</span>
+    <span>{{ m.stadium|dash }} {{ '· ' ~ m.city if m.city else '' }}</span>
+  </div>
+  {% if m.original_filename %}<p class="muted">Source : {{ m.original_filename }}</p>{% endif %}
+</section>
+
+<section class="grid two">
+  <article class="card">
+    <div class="section-head"><h2>Événements</h2><a class="btn secondary small" href="/export/events.csv">Export</a></div>
+    <div class="timeline">
+      {% for e in detail.events %}
+      <div class="timeline-item {{ e.event_type }} {{ e.card_color or '' }}">
+        <span class="minute">{{ e|minute_label }}</span>
+        <div>
+          <strong>{{ e|event_label }}</strong>
+          <p>{{ e.club|dash }} · {{ e.player|dash }}{% if e.related_player %} remplace {{ e.related_player }}{% endif %}</p>
+          {% if e.detail %}<small>{{ e.detail }}</small>{% endif %}
+        </div>
+      </div>
+      {% else %}
+      <p class="empty">Aucun événement enregistré.</p>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="section-head"><h2>Officiels et staff</h2></div>
+    <h3>Arbitres / officiels</h3>
+    <ul class="simple-list">
+      {% for o in detail.officials %}<li><span>{{ o.role|dash }}</span><strong>{{ o.full_name }}</strong></li>{% else %}<li class="empty">Aucun officiel détecté.</li>{% endfor %}
+    </ul>
+    <h3>Staff</h3>
+    <ul class="simple-list">
+      {% for s in detail.staff %}<li><span>{{ s.club }} · {{ s.role|dash }}</span><strong>{{ s.full_name }}</strong></li>{% else %}<li class="empty">Aucun staff détecté.</li>{% endfor %}
+    </ul>
+  </article>
+</section>
+
+<section class="card">
+  <div class="section-head"><h2>Joueurs inscrits sur la feuille</h2><a class="btn secondary small" href="/export/match_players.csv">Export</a></div>
+  <div class="table-tools"><input class="table-filter" data-table="players-match-table" placeholder="Filtrer joueurs..."></div>
+  <div class="table-wrap">
+    <table id="players-match-table">
+      <thead><tr><th>Club</th><th>N°</th><th>Joueur</th><th>Licence</th><th>Poste</th><th>Rôle</th><th>Cap.</th><th>GB</th><th>Entrée</th><th>Sortie</th></tr></thead>
+      <tbody>
+      {% for p in detail.players %}
+      <tr>
+        <td>{{ p.club }}</td><td>{{ p.number|dash }}</td><td><strong>{{ p.full_name }}</strong></td><td>{{ p.license_number|dash }}</td><td>{{ p.position|dash }}</td>
+        <td><span class="badge {{ 'green' if p.starter else 'amber' }}">{{ p.sheet_role|dash }}</span></td>
+        <td>{{ 'Oui' if p.captain else '—' }}</td><td>{{ 'Oui' if p.goalkeeper else '—' }}</td><td>{{ p.minute_in|dash }}</td><td>{{ p.minute_out|dash }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="10" class="empty">Aucun joueur enregistré.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="grid two" id="observations">
+  <article class="card">
+    <div class="section-head"><h2>Observations et notes</h2></div>
+    <ul class="notes-list">
+      {% for n in detail.observations %}
+      <li><span>{{ n.minute|dash }}{% if n.minute %}'{% endif %} · {{ n.severity }}</span><p>{{ n.note }}</p><small>{{ n.author|dash }} · {{ n.created_at }}</small></li>
+      {% else %}
+      <li class="empty">Aucune observation.</li>
+      {% endfor %}
+    </ul>
+  </article>
+  <article class="card">
+    <h2>Ajouter une note</h2>
+    <form method="post" action="/matches/{{ m.id }}/observations" class="stack-form">
+      <label>Minute <input name="minute" placeholder="ex: 72"></label>
+      <label>Auteur <input name="author" placeholder="Analyste, commissaire..."></label>
+      <label>Sévérité <select name="severity"><option value="note">Note</option><option value="warning">À vérifier</option><option value="important">Important</option></select></label>
+      <label>Observation <textarea name="note" required placeholder="Ex: joueur blessé, réserve, incident, remarque tactique..."></textarea></label>
+      <button class="btn primary" type="submit">Ajouter</button>
+    </form>
+  </article>
+</section>
+{% endblock %}

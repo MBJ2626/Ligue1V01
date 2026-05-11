@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Joueurs · MatchSheet DB{% endblock %}
+{% block h1 %}Base joueurs{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="section-head"><h2>Tous les joueurs</h2><a class="btn secondary small" href="/export/players.csv">Export CSV</a></div>
+  <div class="table-tools"><input class="table-filter" data-table="players-table" placeholder="Filtrer joueurs..."></div>
+  <div class="table-wrap">
+    <table id="players-table">
+      <thead><tr><th>Joueur</th><th>Licence</th><th>Naissance</th><th>Poste</th><th>Nationalité</th><th>Matchs</th><th>Titularisations</th><th>Buts</th><th>CJ</th><th>CR</th></tr></thead>
+      <tbody>
+      {% for p in players %}
+      <tr>
+        <td><strong>{{ p.full_name }}</strong></td><td>{{ p.license_number|dash }}</td><td>{{ p.birth_date|dash }}</td><td>{{ p.position|dash }}</td><td>{{ p.nationality|dash }}</td>
+        <td>{{ p.matches_played or 0 }}</td><td>{{ p.starts or 0 }}</td><td>{{ p.goals or 0 }}</td><td>{{ p.yellow_cards or 0 }}</td><td>{{ p.red_cards or 0 }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="10" class="empty">Aucun joueur en base.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

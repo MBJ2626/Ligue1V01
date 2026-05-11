@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Notifications · MatchSheet DB{% endblock %}
+{% block h1 %}Notifications discipline{% endblock %}
+{% block content %}
+<section class="grid cards six">
+  <article class="card stat red"><span>Alertes critiques</span><strong>{{ stats.notifications_critical or 0 }}</strong></article>
+  <article class="card stat yellow"><span>Seuil cartons jaunes</span><strong>{{ stats.yellow_suspension_alerts or 0 }}</strong></article>
+  <article class="card stat red"><span>Cartons rouges</span><strong>{{ stats.red_card_alerts or 0 }}</strong></article>
+  <article class="card stat yellow"><span>À surveiller</span><strong>{{ stats.yellow_watch_alerts or 0 }}</strong></article>
+  <article class="card stat"><span>Période</span><strong>{{ period }}</strong><small>matchs</small></article>
+  <article class="card stat"><span>Seuil CJ</span><strong>{{ threshold }}</strong></article>
+</section>
+
+<section class="card">
+  <div class="section-head">
+    <div>
+      <h2>Règles de notification</h2>
+      <p class="muted">Paramètres modifiables pour tester différentes règles disciplinaires.</p>
+    </div>
+  </div>
+  <form method="get" action="/notifications" class="notification-settings">
+    <label>Période de calcul
+      <input type="number" name="period" min="1" max="50" value="{{ period }}">
+    </label>
+    <label>Seuil cartons jaunes
+      <input type="number" name="threshold" min="1" max="10" value="{{ threshold }}">
+    </label>
+    <label>Pré-alertes
+      <select name="include_watch">
+        <option value="1" {{ 'selected' if include_watch else '' }}>Afficher les joueurs à un carton du seuil</option>
+        <option value="0" {{ 'selected' if not include_watch else '' }}>Masquer les pré-alertes</option>
+      </select>
+    </label>
+    <button class="btn primary" type="submit">Recalculer</button>
+  </form>
+  <div class="notice warning">
+    Le prototype génère une alerte quand un joueur atteint {{ threshold }} cartons jaunes sur les {{ period }} derniers matchs de son club, et une alerte immédiate pour chaque carton rouge. La décision finale doit rester vérifiée avec les règlements et décisions officielles de la ligue.
+  </div>
+</section>
+
+<section class="card">
+  <div class="section-head"><h2>Alertes actives</h2><span class="muted">{{ notifications|length }} notification(s)</span></div>
+  <div class="table-tools"><input class="table-filter" data-table="notifications-table" placeholder="Filtrer par joueur, club, match, type..."></div>
+  <div class="table-wrap">
+    <table id="notifications-table">
+      <thead>
+        <tr>
+          <th>Priorité</th><th>Type</th><th>Joueur</th><th>Licence</th><th>Club</th><th>Match source</th><th>Minute</th><th>Compteur</th><th>Action recommandée</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for n in notifications %}
+        <tr class="notification-row {{ n.severity }}">
+          <td><span class="badge {{ 'red' if n.severity == 'critical' else 'yellow' }}">{{ 'Critique' if n.severity == 'critical' else 'Surveillance' }}</span></td>
+          <td>{{ n.title }}</td>
+          <td><strong>{{ n.player|dash }}</strong></td>
+          <td>{{ n.license_number|dash }}</td>
+          <td>{{ n.club|dash }}</td>
+          <td><a href="/matches/{{ n.match_id }}">{{ n.match_label }}</a><br><small class="muted">{{ n.match_date|dash }} · {{ n.match_time|dash }}</small></td>
+          <td>{{ n.minute|dash }}{% if n.minute %}'{% endif %}</td>
+          <td>{% if n.kind == 'red_card' %}<span class="badge red">CR</span>{% else %}<span class="badge yellow">{{ n.count }}/{{ n.threshold }} CJ</span>{% endif %}</td>
+          <td>{{ n.message }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="9" class="empty">Aucune notification active. Les alertes apparaîtront après insertion de feuilles contenant des cartons rouges ou des cumuls de cartons jaunes.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
